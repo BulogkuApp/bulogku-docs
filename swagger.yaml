@@ -1,0 +1,242 @@
+openapi: 3.0.0
+info:
+  title: BULOGKU API
+  version: 1.0.0
+  description: Dokumentasi untuk endpoint autentikasi BULOGKU
+servers:
+  - url: https://backend-bulogkuapp-production.up.railway.app
+    description: Production server
+paths:
+  /api/auth/register/phone:
+    post:
+      tags:
+        - Auth
+      summary: Register user via Firebase Phone Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idToken
+                - name
+                - password
+                - confirmPassword
+              properties:
+                idToken:
+                  type: string
+                  example: eyJhbGciOi...
+                name:
+                  type: string
+                  example: Budi
+                password:
+                  type: string
+                  example: rahasia123
+                confirmPassword:
+                  type: string
+                  example: rahasia123
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              example:
+                message: User created successfully register with phone
+                user:
+                  uid: abc123
+                  name: Budi
+                  phone: "+628123456789"
+                  role: user
+        "400":
+          description: Validation error or user already exists
+        "500":
+          description: Internal server error
+
+  /api/auth/register/google:
+    post:
+      tags:
+        - Auth
+      summary: Register user via Google Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idToken
+              properties:
+                idToken:
+                  type: string
+                  example: eyJhbGciOi...
+      responses:
+        "201":
+          description: User registered via Google
+          content:
+            application/json:
+              example:
+                message: User registered via Google
+                user:
+                  uid: abc123
+                  name: Google User
+                  email: user@email.com
+                  role: user
+        "400":
+          description: Validation error or user already exists
+        "500":
+          description: Internal server error
+
+  /api/auth/users:
+    get:
+      tags:
+        - Auth
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              example:
+                user:
+                  uid: abc123
+                  name: Budi
+                  email: budi@email.com
+                  phone: "+628123456789"
+                  role: user
+        "401":
+          description: Unauthorized
+        "500":
+          description: Server error
+    patch:
+      tags:
+        - Auth
+      summary: Update user profile (name, address)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+      responses:
+        "200":
+          description: User profile updated
+        "400":
+          description: No data to update
+        "500":
+          description: Internal server error
+
+  /api/auth/users/update-email:
+    patch:
+      tags:
+        - Auth
+      summary: Update user's email
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  example: new@email.com
+      responses:
+        "200":
+          description: Email updated
+        "400":
+          description: Email is required
+        "500":
+          description: Internal server error
+
+  /api/auth/users/update-phone:
+    patch:
+      tags:
+        - Auth
+      summary: Update user's phone number
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+              properties:
+                phone:
+                  type: string
+                  example: "+628123456789"
+      responses:
+        "200":
+          description: Phone number updated
+        "400":
+          description: Phone number is required
+        "500":
+          description: Internal server error
+
+  /api/auth/users/update-password:
+    post:
+      tags:
+        - Auth
+      summary: Update user's password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - confirmPassword
+              properties:
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password updated
+        "400":
+          description: Missing or mismatched password fields
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+
+  /api/auth/users/delete:
+    delete:
+      tags:
+        - Auth
+      summary: Delete user account
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User deleted successfully
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
