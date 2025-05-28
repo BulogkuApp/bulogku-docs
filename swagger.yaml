@@ -234,10 +234,10 @@ paths:
           description: User not found
         "500":
           description: Internal server error
-  /api/protected:
+    /api/protected:
     post:
       tags:
-        - protected
+        - Protected
       summary: Protected endpoint
       security:
         - bearerAuth: []
@@ -247,7 +247,18 @@ paths:
           content:
             application/json:
               example:
-                message: Access granted to protected resource
+                message: "Welcome Budi Budi"
+                user:
+                  id: "31291721251725715213286812715"
+                  uid: "12816280389182762302028219239"
+                  email: "budii11@gmail.com"
+                  name: "budiana"
+                  phone: null
+                  password: null
+                  role: "user"
+                  address: null
+                  createdAt: "2025-05-28T02:23:04.465Z"
+                  updatedAt: "2025-05-28T02:23:04.465Z"
         "401":
           description: Unauthorized access, invalid or missing token
         "403":
