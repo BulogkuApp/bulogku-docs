@@ -6,11 +6,11 @@ info:
 servers:
   - url: https://backend-bulogkuapp-production.up.railway.app
     description: Production server
+
 paths:
   /api/auth/register/phone:
     post:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Register user via Firebase Phone Auth
       requestBody:
         required: true
@@ -18,11 +18,7 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - idToken
-                - name
-                - password
-                - confirmPassword
+              required: [idToken, name, password, confirmPassword]
               properties:
                 idToken:
                   type: string
@@ -37,10 +33,30 @@ paths:
                   type: string
                   example: rahasia123
       responses:
-        "201":
+        '201':
           description: User created successfully
           content:
             application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                        example: abc123
+                      name:
+                        type: string
+                        example: Budi
+                      phone:
+                        type: string
+                        example: "+628123456789"
+                      role:
+                        type: string
+                        example: user
               example:
                 message: User created successfully register with phone
                 user:
@@ -48,15 +64,16 @@ paths:
                   name: Budi
                   phone: "+628123456789"
                   role: user
-        "400":
+        '400':
           description: Validation error or user already exists
-        "500":
+          content: {}
+        '500':
           description: Internal server error
+          content: {}
 
   /api/auth/register/google:
     post:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Register user via Google Auth
       requestBody:
         required: true
@@ -64,17 +81,36 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - idToken
+              required: [idToken]
               properties:
                 idToken:
                   type: string
                   example: eyJhbGciOi...
       responses:
-        "201":
+        '201':
           description: User registered via Google
           content:
             application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                        example: abc123
+                      name:
+                        type: string
+                        example: Google User
+                      email:
+                        type: string
+                        example: user@email.com
+                      role:
+                        type: string
+                        example: user
               example:
                 message: User registered via Google
                 user:
@@ -82,23 +118,45 @@ paths:
                   name: Google User
                   email: user@email.com
                   role: user
-        "400":
+        '400':
           description: Validation error or user already exists
-        "500":
+          content: {}
+        '500':
           description: Internal server error
+          content: {}
 
   /api/auth/users:
     get:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Get current authenticated user
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Success
           content:
             application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                        example: abc123
+                      name:
+                        type: string
+                        example: Budi
+                      email:
+                        type: string
+                        example: budi@email.com
+                      phone:
+                        type: string
+                        example: "+628123456789"
+                      role:
+                        type: string
+                        example: user
               example:
                 user:
                   uid: abc123
@@ -106,13 +164,14 @@ paths:
                   email: budi@email.com
                   phone: "+628123456789"
                   role: user
-        "401":
+        '401':
           description: Unauthorized
-        "500":
+          content: {}
+        '500':
           description: Server error
+          content: {}
     patch:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Update user profile (name, address)
       security:
         - bearerAuth: []
@@ -128,17 +187,19 @@ paths:
                 address:
                   type: string
       responses:
-        "200":
+        '200':
           description: User profile updated
-        "400":
+          content: {}
+        '400':
           description: No data to update
-        "500":
+          content: {}
+        '500':
           description: Internal server error
+          content: {}
 
   /api/auth/users/update-email:
     patch:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Update user's email
       security:
         - bearerAuth: []
@@ -148,51 +209,25 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - email
+              required: [email]
               properties:
                 email:
                   type: string
                   example: new@email.com
       responses:
-        "200":
+        '200':
           description: Email updated
-        "400":
+          content: {}
+        '400':
           description: Email is required
-        "500":
+          content: {}
+        '500':
           description: Internal server error
-
-  /api/auth/users/update-phone:
-    patch:
-      tags:
-        - Auth
-      summary: Update user's phone number
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - phone
-              properties:
-                phone:
-                  type: string
-                  example: "+628123456789"
-      responses:
-        "200":
-          description: Phone number updated
-        "400":
-          description: Phone number is required
-        "500":
-          description: Internal server error
+          content: {}
 
   /api/auth/users/update-password:
     post:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Update user's password
       security:
         - bearerAuth: []
@@ -202,50 +237,637 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - password
-                - confirmPassword
+              required: [password, confirmPassword]
               properties:
                 password:
                   type: string
                 confirmPassword:
                   type: string
       responses:
-        "200":
+        '200':
           description: Password updated
-        "400":
+          content: {}
+        '400':
           description: Missing or mismatched password fields
-        "404":
+          content: {}
+        '404':
           description: User not found
-        "500":
+          content: {}
+        '500':
           description: Internal server error
+          content: {}
+
+  /api/auth/users/update-phone:
+    patch:
+      tags: [Auth]
+      summary: Update user's phone number
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone:
+                  type: string
+                  example: "+628123456789"
+      responses:
+        '200':
+          description: Phone number updated
+          content: {}
+        '400':
+          description: Phone number is required
+          content: {}
+        '500':
+          description: Internal server error
+          content: {}
 
   /api/auth/users/delete:
     delete:
-      tags:
-        - Auth
+      tags: [Auth]
       summary: Delete user account
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: User deleted successfully
-        "404":
+          content: {}
+        '404':
           description: User not found
-        "500":
+          content: {}
+        '500':
           description: Internal server error
-    /api/protected:
+          content: {}
+
+  /api/company:
+    get:
+      tags: [Company]
+      summary: Get All Kantor Wilayah dan Cabang
+      description: Mendapatkan seluruh data Kantor Wilayah (Kanwil) beserta daftar Cabang (Kancab) yang terkait.
+      responses:
+        '200':
+          description: Success Get All Data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success Get All Data
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kode:
+                          type: string
+                          example: "07001"
+                        namaKanwil:
+                          type: string
+                          example: KANTOR WILAYAH BENGKULU
+                        provinsi:
+                          type: string
+                          example: BENGKULU
+                        wilayah:
+                          type: string
+                          example: Wilayah II
+                        alamatKantorWilayah:
+                          type: string
+                          example: Jl. Pembangunan No.5, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu, Bengkulu 38224, Indonesia
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-05-27T07:06:51.487Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2025-06-02T01:39:03.683Z"
+                        cabang:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 11
+                              kode:
+                                type: string
+                                example: "07010"
+                              namaCabang:
+                                type: string
+                                example: KANCAB REJANG LEBONG
+                              wilayahKode:
+                                type: string
+                                example: "07001"
+                              alamatKantorCabang:
+                                type: string
+                                example: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example: "2025-05-27T07:06:57.768Z"
+                              updatedAt:
+                                type: string
+                                format: date-time
+                                example: "2025-06-02T01:39:04.494Z"
+              examples:
+                success:
+                  value:
+                    message: Success Get All Data
+                    data:
+                      - kode: "07001"
+                        namaKanwil: KANTOR WILAYAH BENGKULU
+                        provinsi: BENGKULU
+                        wilayah: Wilayah II
+                        alamatKantorWilayah: Jl. Pembangunan No.5, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu, Bengkulu 38224, Indonesia
+                        createdAt: "2025-05-27T07:06:51.487Z"
+                        updatedAt: "2025-06-02T01:39:03.683Z"
+                        cabang:
+                          - id: 11
+                            kode: "07010"
+                            namaCabang: KANCAB REJANG LEBONG
+                            wilayahKode: "07001"
+                            alamatKantorCabang: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                            createdAt: "2025-05-27T07:06:57.768Z"
+                            updatedAt: "2025-06-02T01:39:04.494Z"
+                          - id: 10
+                            kode: "07001"
+                            namaCabang: KANWIL BENGKULU
+                            wilayahKode: "07001"
+                            alamatKantorCabang: Jl. Pembangunan No.5, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu, Bengkulu 38224, Indonesia
+                            createdAt: "2025-05-27T07:06:57.687Z"
+                            updatedAt: "2025-06-02T01:39:04.493Z"
+                      - kode: "14001"
+                        namaKanwil: KANTOR WILAYAH KALBAR
+                        provinsi: KALIMANTAN BARAT
+                        wilayah: Wilayah II
+                        alamatKantorWilayah: Jl. Slt. Abdurrahman No.129, Sungai Bangkong, Kec. Pontianak Kota, Kota Pontianak, Kalimantan Barat 78113, Indonesia
+                        createdAt: "2025-05-27T07:06:52.273Z"
+                        updatedAt: "2025-06-02T01:39:03.683Z"
+                        cabang:
+                          - id: 51
+                            kode: "14010"
+                            namaCabang: KANCAB SINGKAWANG
+                            wilayahKode: "14001"
+                            alamatKantorCabang: Jl. Alianyang No.18a, Melayu, Kec. Singkawang Bar., Kota Singkawang, Kalimantan Barat 79113, Indonesia
+                            createdAt: "2025-05-27T07:07:00.742Z"
+                            updatedAt: "2025-06-02T01:39:04.494Z"
+                          - id: 178
+                            kode: "14050"
+                            namaCabang: KANCAB SANGGAU
+                            wilayahKode: "14001"
+                            alamatKantorCabang: 4HFR+3FH, Ilir Kota, Kapuas, Sanggau Regency, West Kalimantan 78516, Indonesia
+                            createdAt: "2025-05-27T07:07:11.193Z"
+                            updatedAt: "2025-06-02T01:39:04.497Z"
+                          - id: 53
+                            kode: "14030"
+                            namaCabang: KANCAB SINTANG
+                            wilayahKode: "14001"
+                            alamatKantorCabang: Jl. Patimura No.24, Manter, Kec. Sintang, Kabupaten Sintang, Kalimantan Barat 78655, Indonesia
+                            createdAt: "2025-05-27T07:07:00.880Z"
+                            updatedAt: "2025-06-02T01:39:04.494Z"
+                          - id: 177
+                            kode: "14040"
+                            namaCabang: KANCAB PUTUSSIBAU
+                            wilayahKode: "14001"
+                            alamatKantorCabang: VWJC+PH3, Putussibau Kota, North Putussibau, Kapuas Hulu Regency, West Kalimantan 78752, Indonesia
+                            createdAt: "2025-05-27T07:07:11.130Z"
+                            updatedAt: "2025-06-02T01:39:04.497Z"
+        '401':
+          description: Unauthorized. Token tidak valid atau tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        '404':
+          description: Data not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Data not found
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/company/kantor-wilayah:
+    get:
+      tags: [Company]
+      summary: Get All Kantor Wilayah (Kanwil) beserta daftar Cabang (Kancab) terkait (ringkas)
+      description: Mendapatkan seluruh data Kantor Wilayah (Kanwil) beserta daftar Cabang (Kancab) yang terkait, hanya field kode dan nama.
+      responses:
+        '200':
+          description: Success Get Data Kanwil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success Get Data Kanwil
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kode:
+                          type: string
+                          example: "07001"
+                        namaKanwil:
+                          type: string
+                          example: KANTOR WILAYAH BENGKULU
+                        alamatKantorWilayah:
+                          type: string
+                          example: Jl. Pembangunan No.5, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu, Bengkulu 38224, Indonesia
+                        provinsi:
+                          type: string
+                          example: BENGKULU
+                        cabang:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              kode:
+                                type: string
+                                example: "07010"
+                              namaCabang:
+                                type: string
+                                example: KANCAB REJANG LEBONG
+              example:
+                message: Success Get Data Kanwil
+                data:
+                  - kode: "07001"
+                    namaKanwil: KANTOR WILAYAH BENGKULU
+                    alamatKantorWilayah: Jl. Pembangunan No.5, Jemb. Kecil, Kec. Singaran Pati, Kota Bengkulu, Bengkulu 38224, Indonesia
+                    provinsi: BENGKULU
+                    cabang:
+                      - kode: "07010"
+                        namaCabang: KANCAB REJANG LEBONG
+                      - kode: "07001"
+                        namaCabang: KANWIL BENGKULU
+                  - kode: "14001"
+                    namaKanwil: KANTOR WILAYAH KALBAR
+                    alamatKantorWilayah: Jl. Slt. Abdurrahman No.129, Sungai Bangkong, Kec. Pontianak Kota, Kota Pontianak, Kalimantan Barat 78113, Indonesia
+                    provinsi: KALIMANTAN BARAT
+                    cabang:
+                      - kode: "14010"
+                        namaCabang: KANCAB SINGKAWANG
+                      - kode: "14050"
+                        namaCabang: KANCAB SANGGAU
+                      - kode: "14030"
+                        namaCabang: KANCAB SINTANG
+                      - kode: "14040"
+                        namaCabang: KANCAB PUTUSSIBAU
+                      - kode: "14001"
+                        namaCabang: KANWIL KALBAR
+                      - kode: "14020"
+                        namaCabang: KANCAB KETAPANG
+                      - kode: "14002"
+                        namaCabang: KANCAPEM PUTUSSIBAU
+        '401':
+          description: Unauthorized
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/company/kantor-wilayah/{kode}:
+    get:
+      tags: [Company]
+      summary: Get detail Kantor Wilayah (Kanwil) dan daftar Cabang berdasarkan kode Kanwil
+      description: Mendapatkan detail Kanwil beserta daftar Cabang berdasarkan kode Kanwil.
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Kode Kanwil (misal: 01001)
+      responses:
+        '200':
+          description: Success Get Data Kanwil by kode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kode:
+                    type: string
+                    example: "01001"
+                  namaKanwil:
+                    type: string
+                    example: KANTOR WILAYAH ACEH
+                  cabang:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kode:
+                          type: string
+                          example: "01030"
+                        namaCabang:
+                          type: string
+                          example: KANCAB MEULABOH
+              example:
+                kode: "01001"
+                namaKanwil: KANTOR WILAYAH ACEH
+                cabang:
+                  - kode: "01030"
+                    namaCabang: KANCAB MEULABOH
+                  - kode: "01001"
+                    namaCabang: KANWIL ACEH
+                  - kode: "01040"
+                    namaCabang: KANCAB SIGLI
+                  - kode: "01020"
+                    namaCabang: KANCAB LANGSA
+                  - kode: "01011"
+                    namaCabang: KANCAPEM TAKENGON
+                  - kode: "01050"
+                    namaCabang: KANCAB KUTACANE
+                  - kode: "01010"
+                    namaCabang: KANCAB LHOKSEUMAWE
+                  - kode: "01060"
+                    namaCabang: KANCAB BLANG PIDIE
+                  - kode: "01070"
+                    namaCabang: KANCAB TAKENGON
+        '404':
+          description: Data Kanwil tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Data not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/company/kantor-cabang:
+    get:
+      tags: [Company]
+      summary: Get All Kantor Cabang (Kancab) beserta detail Kanwil terkait
+      description: Mendapatkan seluruh data Kantor Cabang (Kancab) beserta data relasi ke Kanwil (kantorWilayah) yang terkait.
+      responses:
+        '200':
+          description: Success Get All Cabang
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 11
+                        kode:
+                          type: string
+                          example: "07010"
+                        namaCabang:
+                          type: string
+                          example: KANCAB REJANG LEBONG
+                        wilayahKode:
+                          type: string
+                          example: "07001"
+                        alamatKantorCabang:
+                          type: string
+                          example: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-05-27T07:06:57.768Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2025-06-02T01:39:04.494Z"
+                        kantorWilayah:
+                          type: object
+                          properties:
+                            kode:
+                              type: string
+                              example: "07001"
+                            namaKanwil:
+                              type: string
+                              example: KANTOR WILAYAH BENGKULU
+                            provinsi:
+                              type: string
+                              example: BENGKULU
+                            wilayah:
+                              type: string
+                              example: Wilayah II
+              example:
+                message: Success
+                data:
+                  - id: 11
+                    kode: "07010"
+                    namaCabang: KANCAB REJANG LEBONG
+                    wilayahKode: "07001"
+                    alamatKantorCabang: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                    createdAt: "2025-05-27T07:06:57.768Z"
+                    updatedAt: "2025-06-02T01:39:04.494Z"
+                    kantorWilayah:
+                      kode: "07001"
+                      namaKanwil: KANTOR WILAYAH BENGKULU
+                      provinsi: BENGKULU
+                      wilayah: Wilayah II
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/company/kantor-cabang/{kode}:
+    get:
+      tags: [Company]
+      summary: Get detail Kantor Cabang (Kancab) beserta Kanwil berdasarkan kode cabang
+      description: Mendapatkan detail data Kancab beserta relasi data Kanwil berdasarkan kode cabang.
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Kode Kantor Cabang (misal: 07010)
+      responses:
+        '200':
+          description: Success Get Detail Kancab
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success Get Detail Kancab
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 11
+                      kode:
+                        type: string
+                        example: "07010"
+                      namaCabang:
+                        type: string
+                        example: KANCAB REJANG LEBONG
+                      wilayahKode:
+                        type: string
+                        example: "07001"
+                      alamatKantorCabang:
+                        type: string
+                        example: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2025-05-27T07:06:57.768Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2025-06-02T01:39:04.494Z"
+                      kantorWilayah:
+                        type: object
+                        properties:
+                          kode:
+                            type: string
+                            example: "07001"
+                          namaKanwil:
+                            type: string
+                            example: KANTOR WILAYAH BENGKULU
+                          provinsi:
+                            type: string
+                            example: BENGKULU
+                          wilayah:
+                            type: string
+                            example: Wilayah II
+              example:
+                message: Success Get Detail Kancab
+                data:
+                  id: 11
+                  kode: "07010"
+                  namaCabang: KANCAB REJANG LEBONG
+                  wilayahKode: "07001"
+                  alamatKantorCabang: GG7R+FJV, Jl. S. Sukowati, Air Putih Lama, Kec. Curup, Kabupaten Rejang Lebong, Bengkulu, Indonesia
+                  createdAt: "2025-05-27T07:06:57.768Z"
+                  updatedAt: "2025-06-02T01:39:04.494Z"
+                  kantorWilayah:
+                    kode: "07001"
+                    namaKanwil: KANTOR WILAYAH BENGKULU
+                    provinsi: BENGKULU
+                    wilayah: Wilayah II
+        '404':
+          description: Data Kancab tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Data not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /api/protected:
     post:
-      tags:
-        - Protected
+      tags: [Protected]
       summary: Protected endpoint
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Protected resource accessed successfully
           content:
             application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      uid: { type: string }
+                      email: { type: string }
+                      name: { type: string }
+                      phone: { type: string, nullable: true }
+                      password: { type: string, nullable: true }
+                      role: { type: string }
+                      address: { type: string, nullable: true }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
               example:
                 message: "Welcome Budi Budi"
                 user:
@@ -259,12 +881,16 @@ paths:
                   address: null
                   createdAt: "2025-05-28T02:23:04.465Z"
                   updatedAt: "2025-05-28T02:23:04.465Z"
-        "401":
+        '401':
           description: Unauthorized access, invalid or missing token
-        "403":
+          content: {}
+        '403':
           description: Forbidden, user does not have permission to access this resource
-        "500":
+          content: {}
+        '500':
           description: Internal server error
+          content: {}
+
 components:
   securitySchemes:
     bearerAuth:
